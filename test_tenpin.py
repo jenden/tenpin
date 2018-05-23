@@ -32,50 +32,50 @@ class TestFrame(unittest.TestCase):
     def test_frame_is_complete(self):
         f1 = Frame(1)
         self.assertFalse(f1.complete())
-        f1.roll(6)
+        f1.bowl(6)
         self.assertFalse(f1.complete())
-        f1.roll(2)
+        f1.bowl(2)
         self.assertTrue(f1.complete())
         
         f2 = Frame(2)
-        f2.roll(10)
+        f2.bowl(10)
         self.assertTrue(f2.complete())
     
     def test_frame_recognizes_spare(self):
         f1 = Frame(1)
-        f1.roll(8)
+        f1.bowl(8)
         self.assertFalse(f1.is_spare())
-        f1.roll(2)
+        f1.bowl(2)
         self.assertTrue(f1.is_spare())
 
         f2 = Frame(2)
-        f2.roll(10)
+        f2.bowl(10)
         self.assertFalse(f2.is_spare())
 
 
     def test_frame_recognizes_strike(self):
         f1 = Frame(1)
-        f1.roll(10)
+        f1.bowl(10)
         self.assertTrue(f1.is_strike())
         self.assertFalse(f1.is_spare())
 
         f2 = Frame(2)
         self.assertFalse(f2.is_strike())
-        f2.roll(8)
-        f2.roll(2)
+        f2.bowl(8)
+        f2.bowl(2)
         self.assertFalse(f2.is_strike())
 
     def test_frame_accepts_only_valid_rolls(self):
         f1 = Frame(1)
         with self.assertRaises(TypeError):
-            f1.roll(1.2)
+            f1.bowl(1.2)
         with self.assertRaises(ValueError):
-            f1.roll(-2)
+            f1.bowl(-2)
         with self.assertRaises(ValueError):
-            f1.roll(11)
-        f1.roll(4)
+            f1.bowl(11)
+        f1.bowl(4)
         with self.assertRaises(ValueError):
-            f1.roll(7)
+            f1.bowl(7)
             
 
 if __name__ == '__main__':

@@ -3,9 +3,7 @@
 class Game:
 
     def __init__(self, rolls=None):
-
         self.new_game()
-        
         if rolls:
             for roll in rolls:
                 self.bowl(roll)
@@ -14,8 +12,7 @@ class Game:
         self.frames = [Frame(1)]
         self.game_over = False
 
-    def bowl(self, pins):
-
+    def bowl(self, roll):
         if self.game_over:
             return self
 
@@ -23,13 +20,13 @@ class Game:
         if current_frame.complete():
             self.frames.append(current_frame.next_frame())
             current_frame = self.frames[-1]
-        current_frame.roll(pins)
+        current_frame.bowl(roll)
 
         self.check_game_over()
         return self
     
     def check_game_over(self):
-        # complete iff ten frames are scored
+        # complete iff ten frames have scores
         num_frames = len(self.frames)
         all_frames_complete = all([f.score() is not None for f in self.frames[:10]])
         if num_frames >= 10 and all_frames_complete:
@@ -39,7 +36,7 @@ class Game:
         return [frame.score() for frame in self.frames[:10]]
 
     def final_score(self):
-        return sum(self.score()[:10])
+        return sum(self.score())
     
     def __repr__(self):
         return ''.join([str(f) for f in self.frames])
@@ -53,21 +50,17 @@ class Frame:
         self.last = last
         self.next = next
 
-    def roll(self, pins):
-        self.validate_roll(pins)
-        self.rolls.append(pins)
+    def bowl(self, roll):
+        self.validate_bowl(roll)
+        self.rolls.append(roll)
 
-    def validate_roll(self, pins):
-        if not isinstance(pins, int):
+    def validate_bowl(self, roll):
+        if not isinstance(roll, int):
             raise TypeError('The number of pins knocked down must be an integer')
-        if pins < 0 or pins > 10 - sum(self.rolls):
+        if roll < 0 or roll > 10 - sum(self.rolls):
             raise ValueError('Cannot knock down more than 10 or less than 0 pins')
         
     def complete(self):
-        # frame is complete iff
-        # - score is equal to 10
-        # - two rolls
-
         if sum(self.rolls) == 10 or len(self.rolls) == 2:
             return True
         else:
@@ -99,22 +92,22 @@ class Frame:
 
         try:
             if self.is_spare():
-                return score + self.next_frame().get_sum_of_n_next_rolls(1)
+                return score + self.next_frame().get_sum_of_next_n_rolls(1)
             elif self.is_strike():
-                return score + self.next_frame().get_sum_of_n_next_rolls(2)
+                return score + self.next_frame().get_sum_of_next_n_rolls(2)
         except TypeError:
             return None
         
         return score
         
-    def get_sum_of_n_next_rolls(self, n):
+    def get_sum_of_next_n_rolls(self, n):
         # return sum of next rolls or None if not complete
         available_rolls = len(self.rolls)
         if available_rolls >= n:
             return sum(self.rolls[:n])
         if self.complete() and len(self.rolls) < n:
             remaining_rolls = n - available_rolls
-            return sum(self.rolls) + self.next_frame().get_sum_of_n_next_rolls(available_rolls)
+            return sum(self.rolls) + self.next_frame().get_sum_of_next_n_rolls(available_rolls)
             
     
     def __repr__(self):
