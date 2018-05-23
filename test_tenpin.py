@@ -12,6 +12,10 @@ class TestGame(unittest.TestCase):
             self.assertFalse(g.game_over)
             g.bowl(roll)
         self.assertTrue(g.game_over)
+        final_score = g.final_score()
+        g.bowl(10)
+        self.assertEqual(final_score, g.final_score())
+        
 
     def test_game_scores_valid_sequence_correctly(self):
         rolls = [10, 7, 3, 9, 0, 10, 0, 8, 8, 2, 0, 6, 10, 10, 10, 8, 1]

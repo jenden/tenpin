@@ -32,11 +32,9 @@ class Game:
         if num_frames >= 10 and all_frames_complete:
             self.game_over = True
 
-    def score(self):
-        return [frame.score() for frame in self.frames[:10]]
-
     def final_score(self):
-        return sum(self.score())
+        frame_scores = [frame.score() for frame in self.frames[:10]]
+        return sum(frame_scores)
     
     def __repr__(self):
         return ''.join([str(f) for f in self.frames])
