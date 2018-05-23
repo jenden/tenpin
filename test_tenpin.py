@@ -15,7 +15,6 @@ class TestGame(unittest.TestCase):
         final_score = g.final_score()
         g.bowl(10)
         self.assertEqual(final_score, g.final_score())
-        
 
     def test_game_scores_valid_sequence_correctly(self):
         rolls = [10, 7, 3, 9, 0, 10, 0, 8, 8, 2, 0, 6, 10, 10, 10, 8, 1]
@@ -30,7 +29,18 @@ class TestGame(unittest.TestCase):
         with self.assertRaises(ValueError):
             g = Game(rolls)
             print(g)
-            
+
+    def test_perfect_game(self):
+        g = Game()
+        for _ in range(12):
+            self.assertFalse(g.game_over)
+            g.bowl(10)
+        self.assertTrue(g.game_over)
+        expected_score = 300
+        actual_score = g.final_score()
+        self.assertEqual(actual_score, expected_score)
+
+
 class TestFrame(unittest.TestCase):
 
     def test_frame_is_complete(self):
