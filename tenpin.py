@@ -1,5 +1,4 @@
-
-
+"""Challenge: correctly score a game of ten pin bowling"""
 
 class Game:
 
@@ -13,25 +12,38 @@ class Game:
 
     def new_game(self):
         self.frames = [Frame(1)]
+        self.game_over = False
 
     def bowl(self, pins):
-     
+
+        if self.game_over:
+            return self
+
         current_frame = self.frames[-1]
         if current_frame.complete():
             self.frames.append(current_frame.next_frame())
             current_frame = self.frames[-1]
         current_frame.roll(pins)
 
+        self.check_game_over()
         return self
     
+    def check_game_over(self):
+        # complete iff ten frames are scored
+        num_frames = len(self.frames)
+        all_frames_complete = all([f.score() is not None for f in self.frames[:10]])
+        if num_frames >= 10 and all_frames_complete:
+            self.game_over = True
+
     def score(self):
-        return [frame.score() for frame in self.frames]
+        return [frame.score() for frame in self.frames[:10]]
 
-    def __repr__(self):
-        return str(self.frames)
-
-
+    def final_score(self):
+        return sum(self.score()[:10])
     
+    def __repr__(self):
+        return ''.join([str(f) for f in self.frames])
+
 
 class Frame:
     
@@ -80,6 +92,8 @@ class Frame:
     def score(self):
         if not self.complete():
             return None
+        if self.number > 10:
+            return None
 
         score = sum(self.rolls)
 
@@ -104,11 +118,17 @@ class Frame:
             
     
     def __repr__(self):
-        return_string = 'Frame {}: '.format(self.number)
+        return_string = '\n{0:>2}: [{1}] {2}'
+        score = self.score()
+        score_string = '-> {}'.format(score) if score is not None else ''
         if self.is_strike():
-            return return_string + '[  X]'
-        if self.is_spare():
-            return return_string + '[{} /]'.format(self.rolls[0])
+            roll_string = '  X'
+        elif self.is_spare():
+            roll_string = '{} /'.format(self.rolls[0])
+        else:
+            padded_rolls = self.rolls + ['_']*(2-len(self.rolls))
+            roll_string = '{} {}'.format(*padded_rolls)
 
-        rolls = self.rolls + ['_']*(2-len(self.rolls))
-        return return_string + '[{} {}]'.format(*rolls)
+        return return_string.format(self.number, roll_string, score_string)
+
+        
